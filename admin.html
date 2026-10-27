@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#4f46e5">
+<title>لوحة الإدارة · محول الملفات</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- ============ شاشة تسجيل الدخول ============ -->
+<main class="login" id="loginView" hidden>
+  <form class="login-card" id="loginForm" novalidate>
+    <div class="brand-mark" aria-hidden="true">⇄</div>
+    <h1>لوحة الإدارة</h1>
+    <p class="muted">سجّل الدخول بحساب المشرف للاطلاع على الإحصائيات</p>
+
+    <label class="field">
+      <span>البريد الإلكتروني</span>
+      <input type="email" id="email" autocomplete="username" dir="ltr" required>
+    </label>
+    <label class="field">
+      <span>كلمة المرور</span>
+      <input type="password" id="password" autocomplete="current-password" dir="ltr" required>
+    </label>
+
+    <p class="form-error" id="loginError" role="alert" hidden></p>
+    <button class="btn primary block" id="loginBtn" type="submit">دخول</button>
+  </form>
+</main>
+
+<!-- ============ لوحة التحكم ============ -->
+<div class="app" id="appView" hidden>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark sm" aria-hidden="true">⇄</span>
+      <div>
+        <strong>لوحة الإدارة</strong>
+        <span class="muted small">محول الملفات · File Converter</span>
+      </div>
+    </div>
+    <div class="actions">
+      <label class="select">
+        <span class="sr-only">الفترة الزمنية</span>
+        <select id="rangeSel">
+          <option value="7">آخر 7 أيام</option>
+          <option value="30" selected>آخر 30 يوماً</option>
+          <option value="90">آخر 90 يوماً</option>
+          <option value="365">آخر سنة</option>
+        </select>
+      </label>
+      <button class="btn ghost" id="refreshBtn" type="button">تحديث</button>
+      <button class="btn ghost icon" id="themeBtn" type="button" aria-label="تبديل الوضع الداكن">🌙</button>
+      <button class="btn ghost" id="logoutBtn" type="button">خروج</button>
+    </div>
+  </header>
+
+  <div class="statusbar" role="status" aria-live="polite">
+    <span class="dot" id="statusDot"></span>
+    <span id="statusText">جارٍ التحميل…</span>
+  </div>
+
+  <section class="kpis" id="kpis" aria-label="المؤشرات الرئيسية"></section>
+
+  <section class="grid" aria-label="الرسوم البيانية">
+    <article class="card span-2">
+      <header class="card-head">
+        <h2>التحويلات يومياً</h2>
+        <div class="legend" id="dailyLegend"></div>
+      </header>
+      <div class="chart" id="chartDaily"></div>
+    </article>
+
+    <article class="card">
+      <header class="card-head"><h2>أنواع الملفات</h2></header>
+      <div id="chartCategory"></div>
+    </article>
+
+    <article class="card">
+      <header class="card-head"><h2>أكثر التحويلات طلباً</h2></header>
+      <div id="chartRoutes"></div>
+    </article>
+
+    <article class="card span-2">
+      <header class="card-head">
+        <h2>التوزيع حسب ساعة اليوم</h2>
+        <span class="muted small" id="tzNote"></span>
+      </header>
+      <div class="chart" id="chartHours"></div>
+    </article>
+
+    <article class="card">
+      <header class="card-head"><h2>الأجهزة حسب المنصة</h2></header>
+      <div id="chartPlatform"></div>
+    </article>
+
+    <article class="card">
+      <header class="card-head"><h2>لغة الواجهة</h2></header>
+      <div id="chartLang"></div>
+    </article>
+
+    <article class="card">
+      <header class="card-head"><h2>إصدارات التطبيق</h2></header>
+      <div id="chartVersion"></div>
+    </article>
+
+    <article class="card">
+      <header class="card-head"><h2>أسباب الفشل</h2></header>
+      <div id="errorsBox"></div>
+    </article>
+  </section>
+
+  <section class="card">
+    <header class="card-head">
+      <h2>آخر 100 عملية</h2>
+      <button class="btn ghost small" id="exportBtn" type="button">تصدير CSV</button>
+    </header>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>الوقت</th>
+            <th>الحدث</th>
+            <th>المسار</th>
+            <th>الحالة</th>
+            <th>الملفات</th>
+            <th>الحجم</th>
+            <th>المدة</th>
+            <th>المنصة</th>
+            <th>الإصدار</th>
+            <th>تأخير الإرسال</th>
+          </tr>
+        </thead>
+        <tbody id="recentBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="foot muted small">
+    تُحدَّث البيانات تلقائياً كل دقيقة · المنطقة الزمنية: <span id="tzLabel" dir="ltr"></span>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "محول الملفات · File Converter",
+  "short_name": "محول الملفات",
+  "description": "Convert images, video, audio, PDF, Word and Excel on your device. Files never leave your phone.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
